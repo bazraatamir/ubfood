@@ -1,8 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const { PrismaClient } = require("@prisma/client");
+const multer = require("multer");
+const path = require("path");
 
 const app = express();
+const prisma = new PrismaClient();
 
 // CORS тохиргоо
 const corsOptions = {
@@ -16,9 +20,17 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Статик файлуудын зам
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Routes
 const restaurantDetailsRoutes = require("./routes/restaurantDetails.routes");
+const authRoutes = require("./routes/auth");
+const signatureRoutes = require("./routes/signatureDish");
+
 app.use("/api/restaurant-details", restaurantDetailsRoutes);
+app.use("/auth", authRoutes);
+app.use("/signature", signatureRoutes);
 
 // Алдаа боловсруулах middleware
 app.use((err, req, res, next) => {
